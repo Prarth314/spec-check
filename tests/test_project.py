@@ -178,6 +178,8 @@ def test_vercel_workspace_never_requires_writable_server_storage(tmp_path, monke
         assert doc["pages"] == 2 and doc["chunks"] == len(doc["extracted_chunks"])
         question = {"question":"What is the stall current?", "documents":[
             {"id":doc["id"], "name":doc["name"], "pages":doc["pages"], "chunks":doc["extracted_chunks"]}]}
+        # Existing browser libraries may contain blank decorative-table artifacts.
+        question["documents"][0]["chunks"].append({"page":1,"kind":"table","text":""})
         # Fresh requests reconstruct the corpus from the browser, without server state.
         for _ in range(2):
             answer = hosted.post("/api/browser/ask",json=question).json()

@@ -72,6 +72,8 @@ def extract_pdf(content: bytes):
                 if len(group) > 1:
                     chunks.append({"page": number, "kind": "table", "text": markdown_table(group)})
             page.close()
+    # Some decorative/empty table grids produce no usable cells.
+    chunks = [chunk for chunk in chunks if chunk["text"].strip()]
     if not chunks:
         raise ValueError("No text or tables could be extracted. Scanned PDFs need OCR first.")
     return total, chunks, warnings

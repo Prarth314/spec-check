@@ -6,7 +6,7 @@ const browserLibrary = window.SpecCheckLibrary;
 function node(tag, text, className) { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (className) e.className = className; return e; }
 async function api(path, options) {
   const r = await fetch(path, options);
-  if (!r.ok) { let msg = r.status === 413 ? 'This request is too large. Use a smaller PDF or select fewer datasheets.' : `Request failed (${r.status})`; try { const body = await r.json(); msg = typeof body.detail === 'string' ? body.detail : msg; } catch {} throw new Error(msg); }
+  if (!r.ok) { let msg = r.status === 413 ? 'This request is too large. Use a smaller PDF or select fewer datasheets.' : `Request failed (${r.status})`; try { const body = await r.json(); msg = typeof body.detail === 'string' ? body.detail : Array.isArray(body.detail) ? `Please check your input: ${body.detail[0]?.msg || 'invalid request'}` : msg; } catch {} throw new Error(msg); }
   return r.json();
 }
 function notify(text) { $('#notice').textContent = text; $('#notice').hidden = !text; }

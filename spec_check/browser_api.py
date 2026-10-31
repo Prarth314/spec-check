@@ -57,7 +57,9 @@ async def extract(file: UploadFile = File(...)):
 class BrowserChunk(BaseModel):
     page: int = Field(ge=1, le=500)
     kind: Literal["text", "table"]
-    text: str = Field(min_length=1, max_length=20000)
+    # Older browser libraries may contain empty table artifacts. Retrieval ignores
+    # these, so tolerate them while the extractor stops creating new empty chunks.
+    text: str = Field(max_length=20000)
 
 
 class BrowserDocument(BaseModel):
@@ -68,6 +70,8 @@ class BrowserDocument(BaseModel):
 
     @model_validator(mode="after")
     def pages_exist(self):
+        if not any(chunk.text.strip() for chunk in self.chunks):
+            raise ValueError("Document has no searchable text")
         if any(chunk.page > self.pages for chunk in self.chunks):
             raise ValueError("Chunk refers to a page outside its document")
         return self
