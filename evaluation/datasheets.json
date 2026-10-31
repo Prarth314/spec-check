@@ -1,0 +1,8 @@
+[
+  {"id":"pololu25d", "file":"pololu-25d.pdf", "category":"motor", "manufacturer":"Pololu", "url":"https://www.pololu.com/file/0J1829/pololu-25d-metal-gearmotors.pdf"},
+  {"id":"tmp117", "file":"tmp117.pdf", "category":"temperature sensor", "manufacturer":"Texas Instruments", "url":"https://www.ti.com/lit/ds/symlink/tmp117.pdf"},
+  {"id":"lm35", "file":"lm35.pdf", "category":"temperature sensor", "manufacturer":"Texas Instruments", "url":"https://www.ti.com/lit/ds/symlink/lm35.pdf"},
+  {"id":"ads1115", "file":"ads1115.pdf", "category":"analog-to-digital converter", "manufacturer":"Texas Instruments", "url":"https://www.ti.com/lit/ds/symlink/ads1115.pdf"},
+  {"id":"atmega328p", "file":"atmega328p.pdf", "category":"microcontroller (automotive revision)", "manufacturer":"Microchip", "url":"https://ww1.microchip.com/downloads/en/devicedoc/atmel-7810-automotive-microcontrollers-atmega328p_datasheet.pdf"},
+  {"id":"drv8833", "file":"drv8833.pdf", "category":"motor driver", "manufacturer":"Texas Instruments", "url":"https://www.ti.com/lit/ds/symlink/drv8833.pdf"}
+]

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Ask your datasheets. Trace every specification to its source.">
+  <title>Spec Check · Datasheet workspace</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23162c26'/%3E%3Cpath d='m17 32 10 10 21-23' fill='none' stroke='%23bded88' stroke-width='7'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="Spec Check home"><span class="brand-icon">s<span>✓</span></span> Spec Check<span class="beta">LAB</span></a>
+    <div class="workspace-label">ENGINEERING WORKSPACE</div>
+    <div class="nav-item active"><span>▧</span> Datasheet explorer <span class="nav-arrow">↗</span></div>
+    <div class="library-heading"><h2>Your library</h2><span id="doc-count" class="count">0</span></div>
+    <p class="sidebar-hint">Select up to 8 datasheets to search together.</p>
+    <div id="documents" class="documents"><p class="empty-library">Your next project starts with a datasheet.</p></div>
+    <label class="upload-zone" id="drop-zone" tabindex="0" role="button" aria-label="Upload PDF datasheets">
+      <span class="upload-icon">↥</span><strong>Add datasheets</strong><span>Drop PDFs here or browse files</span><small>PDF · up to 20 MB each · 500 pages</small>
+      <input id="file-input" type="file" accept="application/pdf,.pdf" multiple hidden>
+    </label>
+    <p id="upload-status" role="status" class="upload-status"></p>
+    <div class="sidebar-bottom"><span class="team-avatar">SC</span><div><strong>Spec Check team</strong><small>CSCE 289 · AI for Engineers</small></div></div>
+  </aside>
+  <div class="main-shell">
+    <header><div class="breadcrumb">Workspace <span>/</span> Datasheet explorer</div><span id="mode-badge" class="mode-badge"><i></i> Checking connection</span></header>
+    <main>
+      <div class="eyebrow"><span class="tiny-square"></span> LESS SCROLLING. MORE BUILDING.</div>
+      <div class="title-row"><h1>Know your parts.<br><span>Check your specs.</span></h1><div class="circuit-art" aria-hidden="true"><div class="chip">SC<span>⌁</span></div><i></i><i></i><i></i><i></i></div></div>
+      <p class="intro">Turn dense datasheets into clear answers.<br>Ask a question, compare components, and follow the evidence.</p>
+      <section class="question-panel" aria-labelledby="question-heading">
+        <div class="panel-top"><h2 id="question-heading"><span>⌕</span> Ask your datasheets</h2><span id="selection-count">No datasheets selected</span></div>
+        <form id="question-form">
+          <label class="sr-only" for="question">Your hardware question</label>
+          <textarea id="question" rows="3" maxlength="1500" minlength="3" required placeholder="What is the maximum operating supply voltage?"></textarea>
+          <div class="question-footer"><span><span class="lock-icon">◈</span> Answers grounded in your selected PDFs</span><button type="submit" id="ask-button">Find the specs <span>↗</span></button></div>
+        </form>
+      </section>
+      <div class="suggestions"><span>TRY ASKING</span><button type="button" data-question="What is the recommended operating supply voltage range?">Operating voltage <span>↗</span></button><button type="button" data-question="Compare the maximum current ratings of these parts, including conditions.">Compare current ratings <span>↗</span></button><button type="button" data-question="What is the maximum junction temperature?">Thermal limits <span>↗</span></button></div>
+      <div id="notice" class="notice" role="status" hidden></div>
+      <section id="results" hidden aria-live="polite">
+        <div class="results-heading"><h2>Research results</h2><button type="button" id="export-button" class="text-button">Export JSON ↓</button></div>
+        <p id="result-question" class="result-question"></p>
+        <div id="answer-card" class="answer-card"></div>
+        <div class="evidence-heading"><h3>Source evidence</h3><span>PDF page numbers · verify in the original</span></div>
+        <div id="evidence-list"></div>
+      </section>
+      <section id="welcome" class="welcome">
+        <div class="section-label">FROM DOCUMENT TO DECISION</div>
+        <div class="steps"><article><span class="step-number">01 /</span><div class="step-symbol">▤</div><h3>Bring your datasheets</h3><p>Upload a motor, sensor, or microcontroller PDF. Keep all your parts in one place.</p></article><article><span class="step-number">02 /</span><div class="step-symbol">⌕</div><h3>Ask in plain language</h3><p>Search for a specification or compare multiple components against your requirements.</p></article><article><span class="step-number">03 /</span><div class="step-symbol">✓</div><h3>Go straight to the source</h3><p>Review extracted evidence and open the exact PDF page behind a cited answer.</p></article></div>
+        <div class="principle"><span>◎</span><div><strong>A missing spec should stay missing.</strong><p>When retrieved evidence is insufficient, Spec Check is instructed to say so. Always verify critical ratings in the original.</p></div></div>
+      </section>
+      <footer><span>Built by Yash Gandre, Smera Das Gupta &amp; Prarth Gupta</span><span>SPEC CHECK <span class="footer-dot">●</span> 2026</span></footer>
+    </main>
+  </div>
+  <dialog id="source-dialog"><div class="dialog-top"><h2 id="source-title">Source page</h2><a id="source-open" target="_blank" rel="noopener">Open PDF ↗</a><button type="button" id="close-dialog" aria-label="Close source viewer">✕</button></div><div class="source-image-wrap"><img id="source-image" alt="Original datasheet page"><p id="source-image-error" hidden>Page preview unavailable. Use “Open PDF” to view the original.</p></div><p>Rendered directly from the uploaded PDF. Use “Open PDF” for the full-resolution document and other pages.</p></dialog>
+</body>
+</html>

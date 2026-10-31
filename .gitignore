@@ -1,0 +1,12 @@
+.venv/
+.runtime/
+.uv-cache/
+__pycache__/
+.pytest_cache/
+.pytest-tmp*/
+.env
+.env.*
+!.env.example
+data/
+evaluation/runs/
+*.egg-info/
