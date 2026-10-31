@@ -12,6 +12,8 @@ Ask your hardware datasheets a question. Compare parts. Follow every answer back
 [![License: MIT](https://img.shields.io/badge/License-MIT-7b985b?style=flat-square)](LICENSE)
 ![Course](https://img.shields.io/badge/TAMU-CSCE_289-500000?style=flat-square)
 
+[Open live website ↗](https://spec-check-cognihood.vercel.app/)
+
 [Quick start](#quick-start) · [How it works](#how-it-works) · [Evaluation](#evaluation) · [Design document](docs/DESIGN.md)
 
 </div>
