@@ -27,7 +27,12 @@ def search(question, document_ids, limit=12):
             f"SELECT c.*, d.name FROM chunks c JOIN documents d ON d.id=c.document_id WHERE d.id IN ({','.join('?' for _ in document_ids)})",
             document_ids,
         )]
-    if not rows:
+    return rank_chunks(question, rows, document_ids, limit)
+
+
+def rank_chunks(question, rows, document_ids, limit=12):
+    """Use the same retrieval algorithm for SQLite and browser-owned corpora."""
+    if not rows or not document_ids:
         return []
     original = set(tokenize(question))
     if not original:

@@ -1,0 +1,13 @@
+.git
+.venv
+.runtime
+.uv-cache
+.pytest_cache
+.pytest-tmp*
+**/__pycache__
+data
+evaluation/runs
+tests
+docs
+.env*
+!.env.example

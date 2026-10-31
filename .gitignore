@@ -10,3 +10,4 @@ __pycache__/
 data/
 evaluation/runs/
 *.egg-info/
+.vercel/

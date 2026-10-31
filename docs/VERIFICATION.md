@@ -1,5 +1,13 @@
 # Verification — October 31, 2026
 
+## Vercel deployment fix
+
+The original import failed with `FASTAPI_ENTRYPOINT_NOT_FOUND`. The repository now declares `spec_check.app:app`, pins Python 3.12, and includes Vercel deployment configuration and upload/build exclusions.
+
+The regression suite now passes **19 tests**, including stateless extraction, repeated browser-corpus questions, source rendering, invalid files, hosted size limits, and entrypoint configuration. The hosted lifecycle test forces local SQLite initialization/access to fail, verifying that the Vercel path does not depend on a writable or shared server filesystem. The initial local-only verification below remains a historical baseline.
+
+See [the deployment guide](VERCEL.md) for the browser-owned library and hosted limits. Live LLM accuracy still requires the class-approved provider configuration and graded benchmark labels.
+
 ## Automated checks
 
 - 16 tests cover real synthetic-PDF extraction, page boundaries, bordered tables, unit/decimal preservation, upload validation, deduplication, deletion, document-balanced retrieval, no-key evidence mode, no-match abstention, citation IDs and quotes, mocked provider integration, reindexing, benchmark coverage, and ungraded metric handling.

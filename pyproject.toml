@@ -17,3 +17,6 @@ pythonpath = ["."]
 
 [tool.uv]
 package = false
+
+[tool.vercel]
+entrypoint = "spec_check.app:app"

@@ -4,6 +4,8 @@
 **Course:** CSCE 289, AI for Engineers  
 **Prepared:** October 31, 2026
 
+**Hosting update:** The local architecture described below retains SQLite and original PDF files. Vercel deployments use a browser-owned IndexedDB library and stateless Python extraction, retrieval, and rendering endpoints so no server-side local data must survive between requests. Hosted uploads are limited to 4 MB; see [Vercel deployment](VERCEL.md) for the full hosted data flow and constraints.
+
 ## Problem and users
 
 Students and hardware engineers spend time searching lengthy datasheets for voltage ranges, current limits, thermal limits, and pin definitions. Manual Ctrl+F searches miss different names for the same quantity, and spreadsheet comparisons require someone to find and transcribe each value first. Similar part numbers, units, and maximum versus typical columns make transcription errors easy.

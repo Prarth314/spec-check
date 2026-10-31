@@ -6,6 +6,7 @@
   <title>Spec Check · Datasheet workspace</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23162c26'/%3E%3Cpath d='m17 32 10 10 21-23' fill='none' stroke='%23bded88' stroke-width='7'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/browser-library.js" defer></script>
   <script src="/static/app.js" defer></script>
 </head>
 <body>
@@ -17,10 +18,11 @@
     <p class="sidebar-hint">Select up to 8 datasheets to search together.</p>
     <div id="documents" class="documents"><p class="empty-library">Your next project starts with a datasheet.</p></div>
     <label class="upload-zone" id="drop-zone" tabindex="0" role="button" aria-label="Upload PDF datasheets">
-      <span class="upload-icon">↥</span><strong>Add datasheets</strong><span>Drop PDFs here or browse files</span><small>PDF · up to 20 MB each · 500 pages</small>
+      <span class="upload-icon">↥</span><strong>Add datasheets</strong><span>Drop PDFs here or browse files</span><small id="upload-limit">PDF · checking upload limit…</small>
       <input id="file-input" type="file" accept="application/pdf,.pdf" multiple hidden>
     </label>
     <p id="upload-status" role="status" class="upload-status"></p>
+    <p id="storage-note" class="sidebar-hint" hidden>Saved in this browser. Clearing site data removes your library. PDFs are sent to the server for extraction and page previews.</p>
     <div class="sidebar-bottom"><span class="team-avatar">SC</span><div><strong>Spec Check team</strong><small>CSCE 289 · AI for Engineers</small></div></div>
   </aside>
   <div class="main-shell">
@@ -34,7 +36,7 @@
         <form id="question-form">
           <label class="sr-only" for="question">Your hardware question</label>
           <textarea id="question" rows="3" maxlength="1500" minlength="3" required placeholder="What is the maximum operating supply voltage?"></textarea>
-          <div class="question-footer"><span><span class="lock-icon">◈</span> Answers grounded in your selected PDFs</span><button type="submit" id="ask-button">Find the specs <span>↗</span></button></div>
+          <div class="question-footer"><span><span class="lock-icon">◈</span> Answers grounded in your selected PDFs</span><button type="submit" id="ask-button" disabled>Find the specs <span>↗</span></button></div>
         </form>
       </section>
       <div class="suggestions"><span>TRY ASKING</span><button type="button" data-question="What is the recommended operating supply voltage range?">Operating voltage <span>↗</span></button><button type="button" data-question="Compare the maximum current ratings of these parts, including conditions.">Compare current ratings <span>↗</span></button><button type="button" data-question="What is the maximum junction temperature?">Thermal limits <span>↗</span></button></div>

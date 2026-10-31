@@ -26,7 +26,7 @@ The app retrieves relevant text and tables, then optionally uses an LLM to produ
 
 Built by **Yash Gandre, Smera Das Gupta, and Prarth Gupta** for **CSCE 289 · AI for Engineers** at Texas A&M University.
 
-> **Project status:** Working local prototype. Search and source viewing work without an API key. Live LLM validation and final graded accuracy measurements are pending class API access and verified benchmark answers.
+> **Project status:** Working prototype with local and Vercel hosting modes. Search and source viewing work without an API key. Live LLM validation and final graded accuracy measurements are pending class API access and verified benchmark answers.
 
 ## A closer look
 
@@ -124,6 +124,14 @@ The retrieval baseline uses **BM25 with explicit datasheet synonyms**, including
 
 Exact quote matching verifies provenance; it does **not** prove that a model interpreted a specification correctly. Merged cells, diagram pinouts, conditions, units, and absolute maximum versus operating ratings still need careful review. OCR, chart interpretation, embeddings, and production multi-user hosting are outside this prototype's scope.
 
+## Deploy on Vercel
+
+Import this repository, choose the **FastAPI** preset, and keep the Root Directory at `./`. The entry point and Python 3.12 runtime are declared in the repository; no custom build command is required.
+
+On Vercel, your library is saved in **your browser**, so it survives server restarts and stays separate from other visitors. PDFs are sent to Python for extraction and source previews. The hosted upload limit is **4 MB per PDF**, with up to **3 MB of extracted text per question**. The local app keeps its SQLite library and 20 MB upload limit. Clearing browser site data removes a hosted library; it does not sync across devices or hostnames.
+
+Add your provider key/model to the Vercel project's environment settings to enable generated answers. See the [deployment guide](docs/VERCEL.md) for limits, privacy behavior, and verification steps.
+
 ## Evaluation
 
 The benchmark template contains **24 questions across six datasheets**, covering:
@@ -180,6 +188,7 @@ spec-check/
 | [Design document](docs/DESIGN.md) | Problem, architecture, acceptance criteria, risks, and timeline |
 | [Detailed usage](docs/USAGE.md) | Setup alternatives, configuration, sample downloads, and grading protocol |
 | [Verification record](docs/VERIFICATION.md) | Completed checks and pending empirical evaluation |
+| [Vercel deployment](docs/VERCEL.md) | Hosted storage, upload limits, configuration, and verification |
 | [Benchmark template](evaluation/questions.json) | All 24 questions and gold-label fields |
 | [Manufacturer sources](evaluation/datasheets.json) | Six declared sample PDFs and their download URLs |
 

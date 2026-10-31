@@ -17,6 +17,8 @@ from . import store
 from .extraction import extract_pdf
 from .retrieval import search
 from .answering import answer
+from .browser_api import router as browser_router
+from .runtime import browser_storage
 
 load_dotenv()
 ROOT = Path(__file__).resolve().parent.parent
@@ -25,12 +27,19 @@ MAX_BYTES = 20 * 1024 * 1024
 
 @asynccontextmanager
 async def lifespan(app):
-    store.initialize()
+    if not browser_storage():
+        store.initialize()
     yield
 
 
 app = FastAPI(title="Spec Check", version="0.1.0", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
+app.include_router(browser_router)
+
+
+def require_local_storage():
+    if browser_storage():
+        raise HTTPException(409, "This deployment uses a browser-owned library. Use the /api/browser endpoints.")
 
 
 @app.get("/")
@@ -41,11 +50,14 @@ def index():
 @app.get("/api/health")
 def health():
     return {"status": "ok", "llm_configured": bool(os.getenv("OPENAI_API_KEY") and os.getenv("OPENAI_MODEL")),
-            "model": os.getenv("OPENAI_MODEL") or None}
+            "model": os.getenv("OPENAI_MODEL") or None,
+            "storage": "browser" if browser_storage() else "local",
+            "max_upload_bytes": 4 * 1024 * 1024 if browser_storage() else MAX_BYTES}
 
 
 @app.get("/api/documents")
 def documents():
+    require_local_storage()
     with store.connect() as db:
         rows = [dict(r) for r in db.execute("SELECT id,name,sha256,pages,chunks,warnings,created_at FROM documents ORDER BY created_at,id")]
     for row in rows:
@@ -94,6 +106,7 @@ def ingest(content, filename, reindex=False):
 
 @app.post("/api/documents", status_code=201)
 async def upload(file: UploadFile = File(...)):
+    require_local_storage()
     content = await file.read(MAX_BYTES + 1)
     await file.close()
     if len(content) > MAX_BYTES:
@@ -106,6 +119,7 @@ async def upload(file: UploadFile = File(...)):
 
 @app.get("/api/documents/{doc_id}/pdf")
 def pdf(doc_id: str):
+    require_local_storage()
     with store.connect() as db:
         doc = db.execute("SELECT name FROM documents WHERE id=?", (doc_id,)).fetchone()
     if not doc:
@@ -116,6 +130,7 @@ def pdf(doc_id: str):
 
 @app.delete("/api/documents/{doc_id}")
 def delete(doc_id: str):
+    require_local_storage()
     with store.connect() as db:
         result = db.execute("DELETE FROM documents WHERE id=?", (doc_id,))
         if not result.rowcount:
@@ -126,6 +141,7 @@ def delete(doc_id: str):
 
 @app.get("/api/documents/{doc_id}/pages/{page_number}.png")
 def source_page(doc_id: str, page_number: int):
+    require_local_storage()
     with store.connect() as db:
         doc = db.execute("SELECT pages FROM documents WHERE id=?", (doc_id,)).fetchone()
     if not doc:
@@ -149,6 +165,7 @@ class Question(BaseModel):
 
 @app.post("/api/ask")
 async def ask(request: Question):
+    require_local_storage()
     ids = list(dict.fromkeys(request.document_ids))
     with store.connect() as db:
         found = {r[0] for r in db.execute(f"SELECT id FROM documents WHERE id IN ({','.join('?' for _ in ids)})", ids)}

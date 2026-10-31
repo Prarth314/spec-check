@@ -152,3 +152,58 @@ def test_reindex_preserves_document_and_replaces_chunks(client):
     with connect() as db:
         assert db.execute("SELECT COUNT(*) FROM documents").fetchone()[0] == 1
         assert db.execute("SELECT COUNT(*) FROM chunks WHERE text='obsolete extraction'").fetchone()[0] == 0
+
+
+def test_vercel_workspace_never_requires_writable_server_storage(tmp_path, monkeypatch):
+    from spec_check import store
+    monkeypatch.setenv("VERCEL", "1")
+    monkeypatch.setenv("SPEC_CHECK_DATA_DIR", str(tmp_path / "must-not-create"))
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_MODEL", raising=False)
+    def forbidden(*args, **kwargs):
+        raise AssertionError("Hosted requests must not use the local database")
+    monkeypatch.setattr(store, "initialize", forbidden)
+    monkeypatch.setattr(store, "connect", forbidden)
+    with TestClient(app) as hosted:
+        assert hosted.get("/").status_code == 200
+        assert hosted.get("/static/browser-library.js").status_code == 200
+        health = hosted.get("/api/health").json()
+        assert health["storage"] == "browser" and health["max_upload_bytes"] == 4 * 1024 * 1024
+        assert hosted.get("/api/documents").status_code == 409
+        assert hosted.post("/api/ask", json={"question":"Voltage?", "document_ids":["any"]}).status_code == 409
+        content = make_pdf()
+        result = hosted.post("/api/browser/extract",files={"file":("motor.pdf",content,"application/pdf")})
+        assert result.status_code == 200
+        doc = result.json()
+        assert doc["pages"] == 2 and doc["chunks"] == len(doc["extracted_chunks"])
+        question = {"question":"What is the stall current?", "documents":[
+            {"id":doc["id"], "name":doc["name"], "pages":doc["pages"], "chunks":doc["extracted_chunks"]}]}
+        # Fresh requests reconstruct the corpus from the browser, without server state.
+        for _ in range(2):
+            answer = hosted.post("/api/browser/ask",json=question).json()
+            assert answer["status"] == "evidence_only"
+            assert answer["evidence"][0]["page"] == 1
+            assert "1.8 A" in answer["evidence"][0]["text"]
+        image = hosted.post("/api/browser/render?page=2",files={"file":("motor.pdf",content,"application/pdf")})
+        assert image.status_code == 200 and image.content.startswith(b"\x89PNG")
+        assert hosted.post("/api/browser/render?page=3",files={"file":("motor.pdf",content,"application/pdf")}).status_code == 404
+        question["documents"][0]["chunks"][0]["page"] = 3
+        assert hosted.post("/api/browser/ask",json=question).status_code == 422
+    assert not (tmp_path / "must-not-create").exists()
+
+
+def test_hosted_pdf_limits_and_corrupt_input(client, monkeypatch):
+    from spec_check import browser_api
+    assert client.post("/api/browser/extract",files={"file":("bad.pdf",b"not PDF")}).status_code == 415
+    assert client.post("/api/browser/extract",files={"file":("bad.pdf",b"%PDF-broken")}).status_code == 422
+    monkeypatch.setattr(browser_api,"MAX_UPLOAD_BYTES",1000)
+    assert client.post("/api/browser/extract",files={"file":("large.pdf",make_pdf())}).status_code == 413
+
+
+def test_vercel_entrypoint_and_python_are_declared():
+    import tomllib
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    config = tomllib.loads((root / "pyproject.toml").read_text())
+    assert config["tool"]["vercel"]["entrypoint"] == "spec_check.app:app"
+    assert (root / ".python-version").read_text().strip() == "3.12"
